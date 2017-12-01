@@ -8,13 +8,13 @@ from sklearn.metrics.pairwise import euclidean_distances
 import csv
 
 ###################### get feature vector for train data (Y of forest fit)
-with open("data/features_train/features_resnet1000_train.csv") as f:
+with open("data/features_train/features_resnet1000intermediate_train.csv") as f:
     ncols = len(f.readline().split(','))
 
-data = np.loadtxt(open("data/features_train/features_resnet1000_train.csv",
+data = np.loadtxt(open("data/features_train/features_resnet1000intermediate_train.csv",
                        "rb"), delimiter=",", usecols=range(1,ncols))
 
-label = np.loadtxt(open("data/features_train/features_resnet1000_train.csv"), delimiter=",", usecols=0, dtype=np.str)
+label = np.loadtxt(open("data/features_train/features_resnet1000intermediate_train.csv"), delimiter=",", usecols=0, dtype=np.str)
 labels = []
 for word in label:
     labels.append((int)(word.split('/')[1].split('.')[0]))
@@ -28,13 +28,13 @@ label_train = data_label[:,1:]
 ############################
 
 ###################### get feature vector for test to match up after forest
-with open("data/features_test/features_resnet1000_test.csv") as f:
+with open("data/features_test/features_resnet1000intermediate_test.csv") as f:
     ncols = len(f.readline().split(','))
 
-data = np.loadtxt(open("data/features_test/features_resnet1000_test.csv",
+data = np.loadtxt(open("data/features_test/features_resnet1000intermediate_test.csv",
                        "rb"), delimiter=",", usecols=range(1,ncols))
 
-label = np.loadtxt(open("data/features_test/features_resnet1000_test.csv"), delimiter=",", usecols=0, dtype=np.str)
+label = np.loadtxt(open("data/features_test/features_resnet1000intermediate_test.csv"), delimiter=",", usecols=0, dtype=np.str)
 labels = []
 for word in label:
     labels.append((int)(word.split('/')[1].split('.')[0]))
