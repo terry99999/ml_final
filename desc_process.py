@@ -39,12 +39,12 @@ def tokenize_clean(dataframe):
         new_dict[i] = list(set(ret_values))
     return (new_dict)
 
-n = 1000
-desc_df = pd.DataFrame(np.full([1000,1], ""))
+n = 10000
+desc_df = pd.DataFrame(np.full([n,1], ""))
 #print(desc_df)
 
 for i in range(0,n):
-    with open("descriptions_train/" + str(i+1)+ ".txt") as file:
+    with open("descriptions_train/" + str(i)+ ".txt") as file:
         lines = file.read()
         desc_df.iat[i, 0] = lines
 
