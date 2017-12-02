@@ -1,17 +1,17 @@
 import numpy as np
 import csv
 
-data_tag = np.loadtxt(open("submission_tags.csv", "rb"), delimiter=",").astype(int) #14%
-data_common = np.loadtxt(open("submission_common.csv", "rb"), delimiter=",").astype(int) #10%
-features_fin = np.loadtxt(open("submission_features_fin.csv", "rb"), delimiter=",").astype(int)
-features_int = np.loadtxt(open("submission_features_int.csv", "rb"), delimiter=",").astype(int)
+data_tag = np.loadtxt(open("tags.csv", "rb"), delimiter=",").astype(int) #14%
+data_common = np.loadtxt(open("common.csv", "rb"), delimiter=",").astype(int) #10%
+features_fin = np.loadtxt(open("features_fin.csv", "rb"), delimiter=",").astype(int)
+features_int = np.loadtxt(open("features_int.csv", "rb"), delimiter=",").astype(int)
 
 
 output = []
 for i in range(len(data_tag)):
     arr = [0] * 2000
     for j in range(len(data_tag[0])):
-        arr[data_tag[i][j]] = arr[data_tag[i][j]] + (50 - j)
+        arr[data_tag[i][j]] = arr[data_tag[i][j]] + (50 - j)*.85
     for j in range(len(features_fin[0])):
         arr[features_fin[i][j]] = arr[features_fin[i][j]] + (50 - j)/2
     for j in range(len(features_int[0])):

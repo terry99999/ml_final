@@ -172,6 +172,6 @@ for i in range(len(prediction)):
     out = get20(prediction[i]).astype(int)
     output.append(out) # 2000 by 20 vec
     
-np.savetxt("submission_features_int.csv", output, delimiter=",")
+np.savetxt("features_int.csv", output, delimiter=",")
 
 print('DONE!!!')  

@@ -3,6 +3,7 @@ from nltk.stem import WordNetLemmatizer
 wordnet_lemmatizer = WordNetLemmatizer()
 import warnings
 warnings.filterwarnings("ignore")
+import random
 
 
 print('Editting Data')
@@ -86,6 +87,7 @@ for descr in descriptions_test:
 
 special_words = []
 counts = []
+
 def get20(vec_in):
     common = []
     for bunch in tag_test:
@@ -102,6 +104,8 @@ def get20(vec_in):
     tmp = np.reshape(np.arange(len(common)), (len(common),1))
     dist_val = np.concatenate((common, tmp), axis=1)
     dist_val_sort = dist_val[dist_val[:,0].argsort()]
+    if (np.sum(dist_val_sort[:,0])==0):
+        return np.array(random.sample(range(2000), 50))
     return dist_val_sort[0:50,1]
 
 print('Getting top 20 matches')
@@ -110,23 +114,7 @@ for i in range(len(list_descriptions)):
     out = get20(list_descriptions[i]).astype(int)
     output.append(out) # 2000 by 20 vec
 
-np.savetxt("submission_common.csv", output, delimiter=",")
+np.savetxt("common.csv", output, delimiter=",")
 
 
 print('DONE!!!')
-
-output = []
-for desc_words in listed_test:
-    common = []
-    for bunch in test_to_words:
-        count = 0
-        for word in desc_words:
-            if (word in bunch):
-                count = count - 1
-        common.append(count)
-    common = np.array(common)
-    common = np.reshape(common, (len(common),1))
-    tmp = np.reshape(np.arange(len(common)), (len(common),1))
-    dist_val = np.concatenate((common, tmp), axis=1)
-    dist_val_sort = dist_val[dist_val[:,0].argsort()]
-    output.append(dist_val_sort[0:20,1])
