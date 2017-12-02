@@ -1,6 +1,6 @@
 import json as json
 from modules import *
-
+import yaml
 
 n = 10000
 desc_df = pd.DataFrame(np.full([n,1], ""))
@@ -15,3 +15,10 @@ desc_dict = tokenize_clean(desc_df)
 
 with open("desc_dict.json", "w") as file:
     json.dump(desc_dict, file)
+
+desc_dict_small = {}
+for i in range(0,200):
+    desc_dict_small[i] = desc_dict[i]
+
+with open("desc_dict_small.yaml", "w") as file:
+    yaml.dump(desc_dict_small, file, default_flow_style=False)

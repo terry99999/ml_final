@@ -42,3 +42,10 @@ for i in range(0, top_features.shape[0]):
 
 with open("feat_dict.yaml", "w") as file:
     yaml.dump(feat_dict, file, default_flow_style=False)
+
+feat_dict_small = {}
+for i in range(0,200):
+    feat_dict_small[i] = feat_dict[i]
+
+with open("feat_dict_small.yaml", "w") as file:
+    yaml.dump(feat_dict_small, file, default_flow_style=False)
