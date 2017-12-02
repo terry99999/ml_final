@@ -6,49 +6,6 @@ warnings.filterwarnings("ignore")
 from sklearn.ensemble import RandomForestRegressor as RF
 from sklearn.metrics.pairwise import euclidean_distances
 
-print('Loading Data')
-###################### get feature vector for train data (Y of forest fit)
-with open("data/features_train/features_resnet1000_train.csv") as f:
-    ncols = len(f.readline().split(','))
-
-data = np.loadtxt(open("data/features_train/features_resnet1000_train.csv",
-                       "rb"), delimiter=",", usecols=range(1,ncols))
-
-label = np.loadtxt(open("data/features_train/features_resnet1000_train.csv"), delimiter=",", usecols=0, dtype=np.str)
-labels = []
-for word in label:
-    labels.append((int)(word.split('/')[1].split('.')[0]))
-
-
-data_label = np.concatenate((np.array(labels)[:, np.newaxis], data), axis=1)
-data_label = data_label[data_label[:,0].argsort()]
-
-
-label_train = data_label[:,1:]
-############################
-
-###################### get feature vector for test to match up after forest
-with open("data/features_test/features_resnet1000_test.csv") as f:
-    ncols = len(f.readline().split(','))
-
-data = np.loadtxt(open("data/features_test/features_resnet1000_test.csv",
-                       "rb"), delimiter=",", usecols=range(1,ncols))
-
-label = np.loadtxt(open("data/features_test/features_resnet1000_test.csv"), delimiter=",", usecols=0, dtype=np.str)
-labels = []
-for word in label:
-    labels.append((int)(word.split('/')[1].split('.')[0]))
-
-
-data_label = np.concatenate((np.array(labels)[:, np.newaxis], data), axis=1)
-data_label = data_label[data_label[:,0].argsort()]
-
-
-label_test = data_label
-label_test_num = label_test[:,0]
-label_test = label_test[:,1:]
-
-############################
 
 print('Editting Data')
 ########################### make bag of words
@@ -112,6 +69,48 @@ descriptions_test = tmp1
 
 ######################################
 
+######################################
+
+#get/simplify descriptions
+tag_train = []
+for i in range(10000):     
+    tmp = []
+    for line in open("data/tags_train/" + str(i) + ".txt"):
+        tmp.append(line)
+    tag_train.append(tmp)
+
+tmp1 = []
+for image in tag_train:
+    tmp2 = []
+    for sentence in image:
+        for word in sentence.split(':'):
+            tmp2.append(changeWords(word))
+    tmp1.append(tmp2)
+tag_train = tmp1
+
+######################################
+
+######################################
+
+#get/simplify descriptions
+tag_test = []
+for i in range(2000):     
+    tmp = []
+    for line in open("data/tags_test/" + str(i) + ".txt"):
+        tmp.append(line)
+    tag_test.append(tmp)
+
+tmp1 = []
+for image in tag_test:
+    tmp2 = []
+    for sentence in image:
+        for word in sentence.split(':'):
+            tmp2.append(changeWords(word))
+    tmp1.append(tmp2)
+tag_test = tmp1
+
+######################################
+
 print('Generating Bag of Words')
 #Bag of words
 dictionary = {}
@@ -122,6 +121,18 @@ for image in descriptions_train:
                 dictionary[word] = 0
 
 for image in descriptions_test:
+    for sentence in image:
+        for word in sentence.split(' '):
+            if word not in dictionary:
+                dictionary[word] = 0
+
+for image in tag_train:
+    for sentence in image:
+        for word in sentence.split(' '):
+            if word not in dictionary:
+                dictionary[word] = 0
+                
+for image in tag_test:
     for sentence in image:
         for word in sentence.split(' '):
             if word not in dictionary:
@@ -138,13 +149,6 @@ for image in descriptions_train:
     data_train.append(tmp_list)
 data_train = np.array(data_train)
 
-keyList = list(dictionary.keys())
-
-print('Fitting the Data to Tree...')
-rf = RF(n_jobs=-1, n_estimators=20)
-rf.fit(data_train, label_train)
-####################################################################
-
 data_test = []
 for image in descriptions_test:
     tmp_dictionary = dictionary.copy()
@@ -156,12 +160,41 @@ for image in descriptions_test:
     data_test.append(tmp_list)
 data_test = np.array(data_test)
 
+label_train = []
+for image in tag_train:
+    tmp_dictionary = dictionary.copy()
+    for sentence in image:
+        for word in sentence.split(' '):
+            if (word in tmp_dictionary):
+                tmp_dictionary[word] = 1
+    tmp_list = list(tmp_dictionary.values())
+    label_train.append(tmp_list)
+label_train = np.array(label_train)
+
+label_test = []
+for image in tag_test:
+    tmp_dictionary = dictionary.copy()
+    for sentence in image:
+        for word in sentence.split(' '):
+            if (word in tmp_dictionary):
+                tmp_dictionary[word] = 1
+    tmp_list = list(tmp_dictionary.values())
+    label_test.append(tmp_list)
+label_test = np.array(label_test)
+
+keyList = list(dictionary.keys())
+
+print('Fitting the Data to Tree...')
+rf = RF(n_jobs=-1, n_estimators=20)
+rf.fit(data_train, label_train)
+####################################################################
+
 print('Outputting Tree Predictions')
 prediction = rf.predict(data_test)
 
 def get20(vec_in):
     dist = euclidean_distances(label_test, vec_in)
-    tmp = np.reshape(label_test_num, (len(label_test_num),1))
+    tmp = np.reshape(np.arange(len(label_test)), (len(label_test),1))
     dist_val = np.concatenate((dist, tmp), axis=1)
     dist_val_sort = dist_val[dist_val[:,0].argsort()]
     return dist_val_sort[0:50,1]
@@ -171,7 +204,7 @@ output = []
 for i in range(len(prediction)):
     out = get20(prediction[i]).astype(int)
     output.append(out) # 2000 by 20 vec
-    
-np.savetxt("submission_features_fin.csv", output, delimiter=",")
 
-print('DONE!!!')
+np.savetxt("submission_tags.csv", output, delimiter=",")
+
+print('DONE!!!')  

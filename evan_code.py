@@ -9,15 +9,15 @@ from sklearn.ensemble import RandomForestRegressor as RF
 from sklearn.metrics.pairwise import euclidean_distances
 
 #get the data
-with open("data/features_train/features_resnet1000_train.csv") as f:
+with open("data/features_train/features_resnet1000intermediate_train.csv") as f:
     ncols = len(f.readline().split(','))
 
 
-data = np.loadtxt(open("data/features_train/features_resnet1000_train.csv",
+data = np.loadtxt(open("data/features_train/features_resnet1000intermediate_train.csv",
                        "rb"), delimiter=",", usecols=range(1,ncols))
 
 
-label = np.loadtxt(open("data/features_train/features_resnet1000_train.csv"), delimiter=",", usecols=0, dtype=np.str)
+label = np.loadtxt(open("data/features_train/features_resnet1000intermediate_train.csv"), delimiter=",", usecols=0, dtype=np.str)
 labels = []
 for word in label:
     labels.append((int)(word.split('/')[1].split('.')[0]))
@@ -48,11 +48,14 @@ def changeWords(s):
     for word in word_list:
         #make it lowercase
         curWord = word.lower()
+        curWord = curWord.strip()
         #lemmantizer
         if (curWord != 'hate'):
             curWord = wordnet_lemmatizer.lemmatize(curWord, 'v')
         #remove stop words
-        stopWords = ['a','an','of','and','by','it','the','this','or','on','i','be']
+        stopWords = ['a','an','of','and','by','it','the','this','or','on','i',
+                     'be','put','show','use','as','his','do','with','that','have','it','to',' ','for',
+                     'by','up','at','those','but']
         if curWord in stopWords:
             continue
         if not (len(curWord) == 0):
@@ -118,10 +121,6 @@ def get20(vec_in):
     dist_val_sort = dist_val[dist_val[:,0].argsort()]
     return dist_val_sort[0:20,1]
 
-#knn = kNN(n_neighbors=1)
-#knn.fit(test_label_cv, test_label_cv_num)
-
-#out = knn.predict(prediction).astype(int)
 output = []
 for i in range(len(test_data_cv_num)):
     out = get20(prediction[i]).astype(int)
@@ -136,9 +135,10 @@ for i in range(len(output)):
     vec = cur[1]
     ind = np.where(vec==num)[0]
     if (len(ind) == 0):
-        ind = 0
+        ind = 20
     else:
         ind = ind[0]
+    #print (ind)
     tmp_score = (20-ind)/20
     score = score + tmp_score
 
