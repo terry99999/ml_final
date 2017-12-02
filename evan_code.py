@@ -107,7 +107,7 @@ train_data_cv = train_data_cv[:,1:]
 test_data_cv_num = test_data_cv[:,0]
 test_data_cv = test_data_cv[:,1:]
 
-rf = RF()
+rf = RF(n_jobs=-1)
 rf.fit(train_data_cv, train_label_cv)
 prediction = rf.predict(test_data_cv)
 

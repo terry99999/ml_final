@@ -7,6 +7,7 @@ from sklearn.ensemble import RandomForestRegressor as RF
 from sklearn.metrics.pairwise import euclidean_distances
 import csv
 
+print('Loading Data')
 ###################### get feature vector for train data (Y of forest fit)
 with open("data/features_train/features_resnet1000intermediate_train.csv") as f:
     ncols = len(f.readline().split(','))
@@ -45,8 +46,11 @@ data_label = data_label[data_label[:,0].argsort()]
 
 
 label_test = data_label
+label_test_num = label_test[:,0]
+label_test = label_test[:,1:]
 ############################
 
+print('Editting Data')
 ########################### make bag of words
 #get/simplify descriptions
 descriptions_train = []
@@ -105,7 +109,7 @@ descriptions_test = tmp1
 
 ######################################
 
-
+print('Generating Bag of Words')
 #Bag of words
 dictionary = {}
 for image in descriptions_train:
@@ -133,7 +137,8 @@ data_train = np.array(data_train)
 
 keyList = list(dictionary.keys())
 
-rf = RF()
+print('Fitting the Data to Tree...')
+rf = RF(n_jobs=-1)
 rf.fit(data_train, label_train)
 ####################################################################
 
@@ -148,9 +153,7 @@ for image in descriptions_test:
     data_test.append(tmp_list)
 data_test = np.array(data_test)
 
-label_test_num = label_test[:,0]
-label_test = label_test[:,1:]
-
+print('Outputting Tree Predictions')
 prediction = rf.predict(data_test)
 
 def get20(vec_in):
@@ -160,12 +163,13 @@ def get20(vec_in):
     dist_val_sort = dist_val[dist_val[:,0].argsort()]
     return dist_val_sort[0:20,1]
 
+print('Getting top 20 matches')
 output = []
 for i in range(len(prediction)):
     out = get20(prediction[i]).astype(int)
     output.append(out) # 2000 by 20 vec
    
-    
+print('Writing to CSV')    
 f = open('submission.csv', 'wt')
 writer = csv.writer(f)
 writer.writerow(('Descritpion_ID','Top_20_Image_IDs'))
@@ -177,3 +181,5 @@ for i in range(len(output)):
     out = out + str(cur[19]) + '.jpg'
     writer.writerow( (str(i) + '.txt', out) )
 f.close()
+
+print('DONE!!!')  
