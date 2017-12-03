@@ -3,8 +3,10 @@ import yaml
 import numpy as np
 from sklearn.neighbors import NearestNeighbors
 import pandas as pd
+import csv
 
-test_train = test
+test_train = "train"
+n_samples = 10000
 
 with open ("feat_dict_" + test_train + ".yaml") as file:
     feat_dict = yaml.load(file)
@@ -24,7 +26,7 @@ all_words = list(set(all_words))
 
 all_words_dict = {all_words[i] : i for i in range(0,len(all_words))}
 
-n_samples = 10000
+
 
 feat_vectors = np.zeros([n_samples,len(all_words)])
 for sample, words in feat_dict.items():
@@ -40,7 +42,7 @@ for sample, words in desc_dict.items():
             desc_vectors[int(sample)][all_words_dict[word]] = 1
 print(desc_vectors)
 
-knn = NearestNeighbors(n_neighbors=20, metric="russellrao")
+knn = NearestNeighbors(n_neighbors=20, metric="cosine")
 knn.fit(feat_vectors)
 matches = knn.kneighbors(desc_vectors, return_distance=False)
 
@@ -54,7 +56,20 @@ for i in range(0,matches.shape[0]):
             score_raw += score
 map20 = score_raw/n_samples
 print("mean average precision " + str(map20))
-output = pd.DataFrame(matches)
-output.to_csv("results_" + test_train + ".csv")
 
 
+output = matches
+
+f = open('dan.csv', 'wt')
+writer = csv.writer(f)
+writer.writerow(('Descritpion_ID','Top_20_Image_IDs'))
+for i in range(len(output)):
+    cur = output[i]
+    out = ""
+    for j in range(19):
+        out = out + str(cur[j]) + '.jpg '
+    out = out + str(cur[19]) + '.jpg'
+    writer.writerow( (str(i) + '.txt', out) )
+f.close()
+
+np.savetxt("dan_int.csv", output, delimiter=",")

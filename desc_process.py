@@ -2,9 +2,10 @@ import json as json
 from modules import *
 import yaml
 
+test_train = "train"
 n = 10000
 desc_df = pd.DataFrame(np.full([n,1], ""))
-test_train = test
+
 
 for i in range(0,n):
     with open("descriptions_"+ test_train + "/" + str(i)+ ".txt") as file:
@@ -13,7 +14,7 @@ for i in range(0,n):
 
 desc_dict = tokenize_clean(desc_df)
 
-with open("desc_dict.yaml", "w") as file:
+with open("desc_dict_" + test_train + ".yaml", "w") as file:
     yaml.dump(desc_dict, file)
 
 desc_dict_small = {}

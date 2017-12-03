@@ -18,7 +18,7 @@ def lemmatize(token, tag):
         'J': wn.ADJ
     }.get(tag[0], wn.NOUN)
     temp_word = lemmatizer.lemmatize(token, tag)
-    temp_word = stemmer.stem(temp_word)
+#    temp_word = stemmer.stem(temp_word)
     return temp_word
 
 
@@ -32,5 +32,6 @@ def tokenize_clean(dataframe):
             for token, tag in nl.pos_tag(word_tokenize(sentence.lower())):
                 ret_values.append(lemmatize(token, tag))
         ret_values = [word for word in ret_values if word not in (stopwords.words('english') + list(string.punctuation)) and word.isalpha()]
-        new_dict[i] = list(set(ret_values))
+#        new_dict[i] = list(set(ret_values))
+        new_dict[i] = ret_values
     return (new_dict)
