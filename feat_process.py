@@ -41,7 +41,7 @@ for i in range(0, top_features.shape[0]):
     for j in range(0,top_features.shape[1]):
         feat_list += (thousand_word_dict[top_features.iat[i,j]])
     feat_list += tags_dict[top_features.index.values[i]]
-    feat_dict[int(top_features.index.values[i])] = feat_list
+    feat_dict[int(top_features.index.values[i])] = list(set(feat_list))
 
 with open("feat_dict_" + test_train + ".yaml", "w") as file:
     yaml.dump(feat_dict, file, default_flow_style=False)

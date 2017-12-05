@@ -32,6 +32,6 @@ def tokenize_clean(dataframe):
             for token, tag in nl.pos_tag(word_tokenize(sentence.lower())):
                 ret_values.append(lemmatize(token, tag))
         ret_values = [word for word in ret_values if word not in (stopwords.words('english') + list(string.punctuation)) and word.isalpha()]
-#        new_dict[i] = list(set(ret_values))
-        new_dict[i] = ret_values
+        new_dict[i] = list(set(ret_values))
+#       new_dict[i] = ret_values
     return (new_dict)
